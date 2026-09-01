@@ -1,4 +1,4 @@
-FROM python:3.12-slim-trixie AS builder
+FROM python:3.12-alpine3.22 AS builder
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1
@@ -11,7 +11,7 @@ COPY pyproject.toml README.md ./
 COPY src ./src
 RUN pip install --upgrade "pip==25.2" && pip install .
 
-FROM python:3.12-slim-trixie AS runtime
+FROM python:3.12-alpine3.22 AS runtime
 
 ENV PATH="/opt/venv/bin:${PATH}" \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -19,8 +19,8 @@ ENV PATH="/opt/venv/bin:${PATH}" \
     MCP_NAME=company-api-gateway \
     SKILLS_DIR=/app/skills
 
-RUN groupadd --gid 10001 gateway \
-    && useradd --uid 10001 --gid 10001 --no-create-home --home-dir /nonexistent gateway \
+RUN addgroup -S -g 10001 gateway \
+    && adduser -S -D -H -u 10001 -G gateway gateway \
     && mkdir -p /app/skills /config \
     && chown -R 10001:10001 /app /config
 
