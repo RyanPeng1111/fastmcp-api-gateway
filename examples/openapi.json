@@ -1,0 +1,21 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Example Spring Boot API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "backendHealth",
+        "summary": "Read backend health",
+        "responses": {
+          "200": {
+            "description": "Backend is healthy"
+          }
+        }
+      }
+    }
+  }
+}
+

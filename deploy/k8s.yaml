@@ -1,0 +1,139 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: company-mcp-gateway-config
+data:
+  MCP_NAME: company-api-gateway
+  OPENAPI_SPEC: /config/openapi/openapi.json
+  OPENAPI_BASE_URL: http://spring-backend.default.svc.cluster.local:8080
+  GRAPHQL_ENDPOINT: http://spring-backend.default.svc.cluster.local:8080/graphql
+  ALLOW_GRAPHQL_MUTATIONS: "false"
+  SKILLS_DIR: /app/skills
+  HTTP_TIMEOUT_SECONDS: "60"
+  HTTP_TRUST_ENV: "false"
+  TLS_VERIFY: "true"
+  FORWARD_HEADER_DENYLIST: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: company-mcp-openapi
+data:
+  openapi.json: |
+    {
+      "openapi": "3.0.3",
+      "info": {"title": "Replace me", "version": "1.0.0"},
+      "paths": {}
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: company-mcp-skills
+data:
+  rest-skill: |
+    ---
+    description: Guidance for using company REST APIs.
+    ---
+    # REST API guidance
+    Prefer read operations before data-changing operations.
+    Authentication is carried in request headers, never tool arguments.
+  graphql-skill: |
+    ---
+    description: Guidance for using the company GraphQL API.
+    ---
+    # GraphQL API guidance
+    Call graphql_introspect_schema before graphql_query when the schema is unknown.
+    Use variables and request only required fields.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: company-mcp-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: company-mcp-gateway
+  template:
+    metadata:
+      labels:
+        app: company-mcp-gateway
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: gateway
+          image: harbor.example.local/ai/company-mcp-gateway:0.1.0
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: company-mcp-gateway-config
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: openapi
+              mountPath: /config/openapi
+              readOnly: true
+            - name: skills
+              mountPath: /app/skills
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: openapi
+          configMap:
+            name: company-mcp-openapi
+        - name: skills
+          configMap:
+            name: company-mcp-skills
+            items:
+              - key: rest-skill
+                path: rest-api/SKILL.md
+              - key: graphql-skill
+                path: graphql-api/SKILL.md
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: company-mcp-gateway
+spec:
+  selector:
+    app: company-mcp-gateway
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
