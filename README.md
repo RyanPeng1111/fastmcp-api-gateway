@@ -90,6 +90,29 @@ uses stateless handling for legacy Streamable HTTP clients.
 
 ## Build and deploy
 
+### Pull the prebuilt test image
+
+The `main` branch is published only after tests pass, the amd64 image is below
+2 GiB, and Trivy reports no Critical vulnerabilities:
+
+```bash
+docker pull ghcr.io/ryanpeng1111/fastmcp-api-gateway:0.1.0
+```
+
+The first GHCR package created by GitHub may be private even when this source
+repository is public. In that case, change the package visibility to Public in
+GitHub before pulling it anonymously from the company network.
+
+To mirror the verified image into Harbor:
+
+```bash
+docker tag ghcr.io/ryanpeng1111/fastmcp-api-gateway:0.1.0 \
+  harbor.example.local/ai/company-mcp-gateway:0.1.0
+docker push harbor.example.local/ai/company-mcp-gateway:0.1.0
+```
+
+### Build locally
+
 ```bash
 docker build -t company-mcp-gateway:0.1.0 .
 docker run --rm -p 8080:8080 \
