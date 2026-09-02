@@ -1,3 +1,5 @@
+"""FastMCP API Gateway ASGI application."""
+
 from __future__ import annotations
 
 from pathlib import Path

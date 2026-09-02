@@ -1,3 +1,5 @@
+"""Environment-based gateway configuration."""
+
 from __future__ import annotations
 
 import os
@@ -54,7 +56,7 @@ class Settings:
             )
 
         return cls(
-            mcp_name=os.getenv("MCP_NAME", "company-api-gateway"),
+            mcp_name=os.getenv("MCP_NAME", "fastmcp-api-gateway"),
             openapi_spec=openapi_spec,
             openapi_base_url=openapi_base_url,
             graphql_endpoint=graphql_endpoint,

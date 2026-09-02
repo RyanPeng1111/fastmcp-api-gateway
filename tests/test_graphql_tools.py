@@ -1,7 +1,7 @@
 import pytest
 from graphql.error import GraphQLSyntaxError
 
-from company_mcp_gateway.graphql_tools import _contains_mutation
+from fastmcp_api_gateway.graphql_tools import _contains_mutation
 
 
 def test_detects_mutation() -> None:
@@ -15,4 +15,3 @@ def test_allows_query() -> None:
 def test_rejects_invalid_graphql() -> None:
     with pytest.raises(GraphQLSyntaxError):
         _contains_mutation("query {")
-

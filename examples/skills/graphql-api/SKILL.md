@@ -1,5 +1,5 @@
 ---
-description: Guidance for discovering and querying the company GraphQL API.
+description: Guidance for discovering and querying a GraphQL API.
 ---
 
 # GraphQL API guidance
@@ -9,4 +9,3 @@ description: Guidance for discovering and querying the company GraphQL API.
 3. Pass dynamic values through GraphQL variables rather than interpolating them into the query.
 4. Use mutations only when the user clearly requests a data change.
 5. When the backend returns GraphQL errors, report them instead of inventing missing data.
-

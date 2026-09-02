@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: company-mcp-gateway-config
+  name: fastmcp-api-gateway-config
 data:
-  MCP_NAME: company-api-gateway
+  MCP_NAME: fastmcp-api-gateway
   OPENAPI_SPEC: /config/openapi/openapi.json
   OPENAPI_BASE_URL: http://spring-backend.default.svc.cluster.local:8080
   GRAPHQL_ENDPOINT: http://spring-backend.default.svc.cluster.local:8080/graphql
@@ -17,7 +17,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: company-mcp-openapi
+  name: fastmcp-openapi
 data:
   openapi.json: |
     {
@@ -29,18 +29,18 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: company-mcp-skills
+  name: fastmcp-skills
 data:
   rest-skill: |
     ---
-    description: Guidance for using company REST APIs.
+    description: Guidance for using REST APIs.
     ---
     # REST API guidance
     Prefer read operations before data-changing operations.
     Authentication is carried in request headers, never tool arguments.
   graphql-skill: |
     ---
-    description: Guidance for using the company GraphQL API.
+    description: Guidance for using the GraphQL API.
     ---
     # GraphQL API guidance
     Call graphql_introspect_schema before graphql_query when the schema is unknown.
@@ -49,16 +49,16 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: company-mcp-gateway
+  name: fastmcp-api-gateway
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: company-mcp-gateway
+      app: fastmcp-api-gateway
   template:
     metadata:
       labels:
-        app: company-mcp-gateway
+        app: fastmcp-api-gateway
     spec:
       automountServiceAccountToken: false
       securityContext:
@@ -70,11 +70,11 @@ spec:
           type: RuntimeDefault
       containers:
         - name: gateway
-          image: harbor.example.local/ai/company-mcp-gateway:0.1.0
+          image: harbor.example.local/ai/fastmcp-api-gateway:0.1.0
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
-                name: company-mcp-gateway-config
+                name: fastmcp-api-gateway-config
           ports:
             - name: http
               containerPort: 8080
@@ -114,10 +114,10 @@ spec:
       volumes:
         - name: openapi
           configMap:
-            name: company-mcp-openapi
+            name: fastmcp-openapi
         - name: skills
           configMap:
-            name: company-mcp-skills
+            name: fastmcp-skills
             items:
               - key: rest-skill
                 path: rest-api/SKILL.md
@@ -129,10 +129,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: company-mcp-gateway
+  name: fastmcp-api-gateway
 spec:
   selector:
-    app: company-mcp-gateway
+    app: fastmcp-api-gateway
   ports:
     - name: http
       port: 8080

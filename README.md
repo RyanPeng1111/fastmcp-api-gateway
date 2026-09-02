@@ -1,4 +1,4 @@
-# Company FastMCP API Gateway
+# FastMCP API Gateway
 
 A small, stateless gateway that exposes an existing Spring Boot OpenAPI API and
 GraphQL endpoint through one MCP endpoint. It also serves ConfigMap-mounted
@@ -75,7 +75,7 @@ export OPENAPI_BASE_URL=http://localhost:8081
 export GRAPHQL_ENDPOINT=http://localhost:8081/graphql
 export SKILLS_DIR=examples/skills
 
-uvicorn company_mcp_gateway.app:app --host 0.0.0.0 --port 8080
+uvicorn fastmcp_api_gateway.app:app --host 0.0.0.0 --port 8080
 ```
 
 Connect Roo Code or another MCP client to:
@@ -107,21 +107,21 @@ To mirror the verified image into Harbor:
 
 ```bash
 docker tag ghcr.io/ryanpeng1111/fastmcp-api-gateway:0.1.0 \
-  harbor.example.local/ai/company-mcp-gateway:0.1.0
-docker push harbor.example.local/ai/company-mcp-gateway:0.1.0
+  harbor.example.local/ai/fastmcp-api-gateway:0.1.0
+docker push harbor.example.local/ai/fastmcp-api-gateway:0.1.0
 ```
 
 ### Build locally
 
 ```bash
-docker build -t company-mcp-gateway:0.1.0 .
+docker build -t fastmcp-api-gateway:0.1.0 .
 docker run --rm -p 8080:8080 \
   -e OPENAPI_SPEC=/config/openapi.json \
   -e OPENAPI_BASE_URL=http://host.docker.internal:8081 \
   -e GRAPHQL_ENDPOINT=http://host.docker.internal:8081/graphql \
   -v "$PWD/examples/openapi.json:/config/openapi.json:ro" \
   -v "$PWD/examples/skills:/app/skills:ro" \
-  company-mcp-gateway:0.1.0
+  fastmcp-api-gateway:0.1.0
 ```
 
 Edit the image and backend URLs in `deploy/k8s.yaml`, then apply it:
@@ -156,7 +156,7 @@ pytest
 Fail the pipeline if the exact built image has a Critical vulnerability:
 
 ```bash
-scripts/trivy-scan.sh company-mcp-gateway:0.1.0
+scripts/trivy-scan.sh fastmcp-api-gateway:0.1.0
 ```
 
 The project cannot guarantee future CVE status. Scan every rebuilt image in the

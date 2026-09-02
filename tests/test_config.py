@@ -1,6 +1,6 @@
 import pytest
 
-from company_mcp_gateway.config import Settings
+from fastmcp_api_gateway.config import Settings
 
 
 def test_openapi_settings_must_be_paired(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -17,6 +17,5 @@ def test_minimal_configuration(monkeypatch: pytest.MonkeyPatch) -> None:
 
     settings = Settings.from_env()
 
-    assert settings.mcp_name == "company-api-gateway"
+    assert settings.mcp_name == "fastmcp-api-gateway"
     assert settings.allow_graphql_mutations is False
-

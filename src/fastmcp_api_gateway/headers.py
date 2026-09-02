@@ -1,3 +1,5 @@
+"""Request-scoped upstream header forwarding."""
+
 from __future__ import annotations
 
 from collections import defaultdict

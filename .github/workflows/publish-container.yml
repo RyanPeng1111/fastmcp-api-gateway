@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 concurrency:
@@ -99,3 +99,16 @@ jobs:
           echo '${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}' >> "$GITHUB_STEP_SUMMARY"
           echo '${{ env.IMAGE_NAME }}:sha-${{ github.sha }}' >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Tag verified release
+        shell: bash
+        run: |
+          tag='${{ env.IMAGE_VERSION }}'
+          if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "Tag ${tag} already exists; leaving it unchanged."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a "${tag}" "${GITHUB_SHA}" -m "FastMCP API Gateway ${tag}"
+          git push origin "refs/tags/${tag}"

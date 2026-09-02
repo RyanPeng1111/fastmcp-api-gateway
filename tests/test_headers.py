@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from company_mcp_gateway.headers import build_forward_headers, create_forwarding_hook
+from fastmcp_api_gateway.headers import build_forward_headers, create_forwarding_hook
 
 
 def test_forwards_business_and_auth_headers() -> None:

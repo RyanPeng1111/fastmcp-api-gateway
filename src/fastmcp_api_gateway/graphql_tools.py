@@ -1,3 +1,5 @@
+"""GraphQL MCP tool registration and execution."""
+
 from __future__ import annotations
 
 from typing import Any
